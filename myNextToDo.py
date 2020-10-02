@@ -177,9 +177,28 @@ if __name__ == '__main__':
     todo_entry_list = parse_todo_txt(myNextToDo_txt)
     todo_entry_list.sort(key=lambda x: x.get_urgency(), reverse=True)
     print('=' * opt.screen_width)
-    for loop_count in range(opt.num_next_actions):
-        print(todo_entry_list[loop_count])
+    printed_entry_count = 0
+    waiting_entry_list = [x for x in todo_entry_list if x.wait]
+    for entry_id, the_entry in enumerate(todo_entry_list):
+        if printed_entry_count >= opt.num_next_actions:
+            break
+        if the_entry.wait:
+            continue
+        print(the_entry)
         print('-' * opt.screen_width)
+        printed_entry_count += 1
+
+    print('*' * opt.screen_width)
+
+    # print waiting
+
+    print('>>>>>>>>>> {} Waiting Entry >>>>>>>>>>'.format(len(waiting_entry_list)))
+    for entry_id, the_entry in enumerate(waiting_entry_list):
+
+        print(the_entry)
+        print('-' * opt.screen_width)
+        printed_entry_count += 1
+
     print('=' * opt.screen_width)
 
 
