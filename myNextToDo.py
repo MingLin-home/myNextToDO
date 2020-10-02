@@ -31,7 +31,7 @@ def parse_datetime_str(datetime_str):
         try:
             the_datetime = datetime.strptime(datetime_str, fmt)
             if fmt_id == 0:
-                the_datetime.year = datetime.today().year
+                the_datetime.replace(year=datetime.today().year)
         except ValueError as e:
             continue
     if the_datetime is None:
