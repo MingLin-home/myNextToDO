@@ -3,7 +3,7 @@ valid tag:
 @start:mm/dd/yyyy
 @due:mm/dd/yyyy
 @cost:3
-@important, @easy
+@important, @easy @today
 """
 import sys, os
 import argparse
@@ -76,6 +76,8 @@ class ToDoEntry():
                 self.easy = True
             if tag_key == 'wait' or tag_key == 'w':
                 self.wait = True
+            if tag_key == 'today' or tag_key == 't':
+                self.due = datetime.today()
 
             self.risk_of_overdue = False
             self.already_overdue = False
