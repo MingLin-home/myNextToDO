@@ -27,9 +27,11 @@ def parse_cmd_options(argv):
 
 def parse_datetime_str(datetime_str):
     the_datetime = None
-    for fmt in ['%m/%d/%Y', '%m/%d/%Y']:
+    for fmt_id, fmt in enumerate(['%m/%d', '%m/%d/%Y']):
         try:
             the_datetime = datetime.strptime(datetime_str, fmt)
+            if fmt_id == 0:
+                the_datetime.year = datetime.today().year
         except ValueError as e:
             continue
     if the_datetime is None:
