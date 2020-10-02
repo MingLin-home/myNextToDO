@@ -3,7 +3,7 @@ valid tag:
 @start:mm/dd/yyyy
 @due:mm/dd/yyyy
 @cost:3
-@important, @easy @today
+@important, @easy @today, @wait
 """
 import sys, os
 import argparse
@@ -22,6 +22,7 @@ def parse_cmd_options(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=str, default=default_myNextToDo_txt)
     parser.add_argument('-n', '--num_next_actions', type=int, default=2)
+    parser.add_argument('--screen_width', type=int, default=72)
     module_opt = parser.parse_args(argv)
     return module_opt
 
@@ -125,7 +126,7 @@ class ToDoEntry():
 
     def __str__(self):
         the_str = ''
-        the_str += 'Title:\t' + self.title + '\n'
+        the_str += 'Title >>> ' + self.title + '\n'
 
         if self.already_overdue:
             the_str += 'Overdue: !!!!! Already Overdue !!!!!\n'
@@ -133,12 +134,13 @@ class ToDoEntry():
             the_str += 'Overdue: *** High Risk *** \n'
 
         if self.start is not None:
-            the_str += 'Start:\t' + str(self.start) + '\n'
+            the_str += 'Start ' + str(self.start) + ' '
         if self.due is not None:
-            the_str += 'Due:\t' + str(self.due) + '\n'
+            the_str += 'Due ' + str(self.due) + ' '
         if self.cost is not None:
-            the_str += 'Cost:\t' + str(self.cost) + '\n'
-        the_str += 'Tag:\t '
+            the_str += 'Cost ' + str(self.cost) + ' '
+        the_str += '\n'
+        the_str += 'Tag: '
         if self.important is not None:
             the_str += '[Important]'
         if self.easy is not None:
@@ -174,10 +176,10 @@ if __name__ == '__main__':
     myNextToDo_txt = opt.input
     todo_entry_list = parse_todo_txt(myNextToDo_txt)
     todo_entry_list.sort(key=lambda x: x.get_urgency(), reverse=True)
-    print('=' * 72)
+    print('=' * opt.screen_width)
     for loop_count in range(opt.num_next_actions):
         print(todo_entry_list[loop_count])
-        print('-' * 72)
-    print('=' * 72)
+        print('-' * opt.screen_width)
+    print('=' * opt.screen_width)
 
 
