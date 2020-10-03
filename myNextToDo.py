@@ -129,7 +129,7 @@ class ToDoEntry():
         the_str += '[Title]\t' + self.title + '\n'
 
         if self.already_overdue:
-            the_str += '[Overdue]\t!!!!! Already Overdue !!!!!\n'
+            the_str += '[Warn]\t!!!!! Already Overdue !!!!!\n'
         elif self.risk_of_overdue:
             the_str += '[Overdue]\tHigh Risk\n'
 
