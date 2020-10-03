@@ -83,7 +83,7 @@ class ToDoEntry():
             self.risk_of_overdue = False
             self.already_overdue = False
 
-            self.risk_of_overdue = self.get_urgency()
+            self.urgency = self.get_urgency()
 
     def get_urgency(self):
         today = datetime.today()
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     opt = parse_cmd_options(sys.argv[1:])
     myNextToDo_txt = opt.input
     todo_entry_list = parse_todo_txt(myNextToDo_txt)
-    todo_entry_list.sort(key=lambda x: x.get_urgency(), reverse=True)
+    todo_entry_list.sort(key=lambda x: x.urgency, reverse=True)
     print('=' * opt.screen_width)
     printed_entry_count = 0
     waiting_entry_list = [x for x in todo_entry_list if x.wait]
