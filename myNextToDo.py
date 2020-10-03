@@ -139,7 +139,7 @@ class ToDoEntry():
         if self.due is not None:
             the_str += 'Due ' + self.due.strftime('%m/%d/%Y') + ' '
         if self.cost is not None:
-            the_str += 'Cost ' + str(self.cost) + ' days '
+            the_str += 'Cost ' + str(self.cost) + ' days \n'
 
         the_str += '[Tag]\t '
         if self.important is not None:
