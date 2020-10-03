@@ -126,21 +126,22 @@ class ToDoEntry():
 
     def __str__(self):
         the_str = ''
-        the_str += 'Title >>> ' + self.title + '\n'
+        the_str += '[Title]\t' + self.title + '\n'
 
         if self.already_overdue:
-            the_str += 'Overdue: !!!!! Already Overdue !!!!!\n'
+            the_str += '[Overdue]\t!!!!! Already Overdue !!!!!\n'
         elif self.risk_of_overdue:
-            the_str += 'Overdue: *** High Risk *** \n'
+            the_str += '[Overdue]\tHigh Risk\n'
 
+        the_str += '[Date]\t'
         if self.start is not None:
-            the_str += 'Start ' + str(self.start) + ' '
+            the_str += 'Start ' + self.start.strftime('%m/%d/%Y') + ' '
         if self.due is not None:
-            the_str += 'Due ' + str(self.due) + ' '
+            the_str += 'Due ' + self.due.strftime('%m/%d/%Y') + ' '
         if self.cost is not None:
-            the_str += 'Cost ' + str(self.cost) + ' '
-        the_str += '\n'
-        the_str += 'Tag: '
+            the_str += 'Cost ' + str(self.cost) + 'Days '
+
+        the_str += '[Tag]\t '
         if self.important is not None:
             the_str += '[Important]'
         if self.easy is not None:
@@ -176,7 +177,7 @@ if __name__ == '__main__':
     myNextToDo_txt = opt.input
     todo_entry_list = parse_todo_txt(myNextToDo_txt)
     todo_entry_list.sort(key=lambda x: x.urgency, reverse=True)
-    print('=' * opt.screen_width)
+    print('*' * opt.screen_width)
     printed_entry_count = 0
     waiting_entry_list = [x for x in todo_entry_list if x.wait]
     for entry_id, the_entry in enumerate(todo_entry_list):
@@ -188,17 +189,16 @@ if __name__ == '__main__':
         print('-' * opt.screen_width)
         printed_entry_count += 1
 
-    print('*' * opt.screen_width)
+    print('=' * opt.screen_width)
 
     # print waiting
-
+    print('-' * opt.screen_width)
     print('>>>>>>>>>> {} Waiting Entry >>>>>>>>>>'.format(len(waiting_entry_list)))
     for entry_id, the_entry in enumerate(waiting_entry_list):
-
         print(the_entry)
         print('-' * opt.screen_width)
         printed_entry_count += 1
 
-    print('=' * opt.screen_width)
+    print('*' * opt.screen_width)
 
 
