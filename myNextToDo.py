@@ -188,7 +188,7 @@ def parse_todo_txt(myNextToDo_txt):
         if len(the_line) == 0 or the_line.startswith('#'):
             continue
 
-        todo_entry_list.append(ToDoEntry(the_line, id=the_line))
+        todo_entry_list.append(ToDoEntry(the_line, id=line_id))
 
     return todo_entry_list
 
