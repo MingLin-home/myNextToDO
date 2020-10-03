@@ -1,3 +1,3 @@
-my first todo entry @start:10/15/2020 @due:11/24/2020 @important
+my first todo entry @start:10/15 @due:11/24/2020 @important
 my 2nd todo entry @start:11/20/2020 @due:12/24/2020 @easy @cost:3
 my 3rd todo entry @start:01/02/1990 @due:02/28/1990 @cost:1 @wait

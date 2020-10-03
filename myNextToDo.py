@@ -23,8 +23,29 @@ def parse_cmd_options(argv):
     parser.add_argument('-i', '--input', type=str, default=default_myNextToDo_txt)
     parser.add_argument('-n', '--num_next_actions', type=int, default=2)
     parser.add_argument('--screen_width', type=int, default=72)
+    parser.add_argument('-d', '--days', type=int, default=60)
+    parser.add_argument('--print_by_due', action='store_true')
     module_opt = parser.parse_args(argv)
     return module_opt
+
+def smart_year(datetime_missing_year):
+    this_year = datetime.today().year
+    datetime_with_this_year = datetime_missing_year.replace(year=this_year)
+    datetime_with_next_year = datetime_missing_year.replace(year=this_year + 1)
+    datetime_with_pre_year = datetime_missing_year.replace(year=this_year - 1)
+    today = datetime.today()
+    diff_this_year = max(today -  datetime_with_this_year, datetime_with_this_year - today)
+    diff_next_year = max(today -  datetime_with_next_year, datetime_with_next_year - today)
+    diff_pre_year = max(today -  datetime_with_pre_year, datetime_with_pre_year - today)
+    diff_list = [diff_this_year, diff_next_year, diff_pre_year]
+    min_diff = min(diff_list)
+    min_idx = diff_list.index(min_diff)
+    if min_idx == 0:
+        return datetime_with_this_year
+    if min_idx == 1:
+        return datetime_with_next_year
+    if min_idx == 2:
+        return datetime_with_pre_year
 
 def parse_datetime_str(datetime_str):
     the_datetime = None
@@ -32,7 +53,7 @@ def parse_datetime_str(datetime_str):
         try:
             the_datetime = datetime.strptime(datetime_str, fmt)
             if fmt_id == 0:
-                the_datetime = the_datetime.replace(year=datetime.today().year)
+                the_datetime = smart_year(the_datetime)
         except ValueError as e:
             continue
     if the_datetime is None:
@@ -172,10 +193,7 @@ def parse_todo_txt(myNextToDo_txt):
 
 
 
-if __name__ == '__main__':
-    opt = parse_cmd_options(sys.argv[1:])
-    myNextToDo_txt = opt.input
-    todo_entry_list = parse_todo_txt(myNextToDo_txt)
+def print_next_action(todo_entry_list, opt):
     todo_entry_list.sort(key=lambda x: x.urgency, reverse=True)
     print('*' * opt.screen_width)
     printed_entry_count = 0
@@ -200,5 +218,45 @@ if __name__ == '__main__':
         printed_entry_count += 1
 
     print('*' * opt.screen_width)
+
+
+def print_by_due(todo_entry_list: list[ToDoEntry], opt):
+    today = datetime.today()
+    max_due_date = today + timedelta(days=opt.days)
+    due_list = [x for x in todo_entry_list if x.due is not None and x.due <= max_due_date]
+    due_list.sort(key=lambda x: x.due)
+    due_group_dict = {}
+    for due_item in due_list:
+        the_key = due_item.due.strftime('%m/%d/%Y')
+        if due_item.due.strftime('%m/%d/%Y') in due_group_dict:
+            due_group_dict[the_key].append(due_item)
+        else:
+            due_group_dict[the_key] = [due_item]
+        pass
+    pass
+
+    print('*' * opt.screen_width)
+    for the_key, the_due_list in due_group_dict.items():
+        print('[Date]\t' + the_key)
+        for the_due in the_due_list:
+            print('\t\t' + the_due.title)
+
+        print('-' * opt.screen_width)
+
+    print('*' * opt.screen_width)
+
+
+
+
+if __name__ == '__main__':
+    opt = parse_cmd_options(sys.argv[1:])
+    myNextToDo_txt = opt.input
+    todo_entry_list = parse_todo_txt(myNextToDo_txt)
+
+    if opt.print_by_due:
+        print_by_due(todo_entry_list, opt)
+
+
+    print_next_action(todo_entry_list, opt)
 
 
