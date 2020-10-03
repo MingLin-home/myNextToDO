@@ -11,8 +11,9 @@ from datetime import datetime, timedelta
 
 default_myNextToDo_txt = os.path.expanduser('./myNextToDo.txt')
 __base_urgency__ = 1
-__overdue_urgency__ = 10000
-__one_day_due_urgency__ = 1000
+__overdue_urgency__ = 100000
+__due_today_urgency__ = 5000
+__one_day_due_urgency__ = 500
 __two_day_due_urgency__ = 100
 __three_day_due_urgency__ = 50
 __important_urgency__ = 10
@@ -104,6 +105,7 @@ class ToDoEntry():
 
             self.risk_of_overdue = False
             self.already_overdue = False
+            self.due_today = False
 
             self.urgency = self.get_urgency()
 
@@ -122,7 +124,6 @@ class ToDoEntry():
             score += __base_urgency__
 
         if self.important:
-            score_muliplier *= 2.0
             score += __important_urgency__
 
         if self.easy:
@@ -131,18 +132,40 @@ class ToDoEntry():
         # compute due date
         if self.due is not None:
             due_date = self.due
-            if today + timedelta(days=self.cost) <= due_date - timedelta(days=3):
+
+            # today + cost compare to due date
+            if today + timedelta(days=self.cost) < due_date - timedelta(days=3):
+                pass
+            elif today + timedelta(days=self.cost) == due_date - timedelta(days=3):
                 score += __three_day_due_urgency__
-            elif today + timedelta(days=self.cost) <= due_date - timedelta(days=2):
+            elif today + timedelta(days=self.cost) == due_date - timedelta(days=2):
                 score += __two_day_due_urgency__
-            elif today + timedelta(days=self.cost) <= due_date - timedelta(days=1):
+            elif today + timedelta(days=self.cost) == due_date - timedelta(days=1):
                 score += __one_day_due_urgency__
-            elif today + timedelta(days=self.cost) >= due_date - timedelta(days=0):
+            elif today + timedelta(days=self.cost) == due_date:
+                score += __due_today_urgency__
+            elif today + timedelta(days=self.cost) > due_date - timedelta(days=0):
                 score += __overdue_urgency__
                 self.risk_of_overdue = True
 
+            if today < due_date - timedelta(days=3):
+                pass
+            elif today == due_date - timedelta(days=3):
+                score += __three_day_due_urgency__
+            elif today  == due_date - timedelta(days=2):
+                score += __two_day_due_urgency__
+            elif today == due_date - timedelta(days=1):
+                score += __one_day_due_urgency__
+            elif today == due_date:
+                score += __due_today_urgency__
+            elif today > due_date - timedelta(days=0):
+                score += __overdue_urgency__
+
         if self.due is not None and self.due < today:
             self.already_overdue = True
+
+        if self.due is not None and self.due == today:
+            self.due_today = True
 
         return score_muliplier * score
 
@@ -152,8 +175,11 @@ class ToDoEntry():
 
         if self.already_overdue:
             the_str += '[Warn]\t!!!!! Already Overdue !!!!!\n'
+        elif self.due_today:
+            the_str += '[Warn]\tDue Today\n'
         elif self.risk_of_overdue:
-            the_str += '[Warn]\tHigh Risk\n'
+            the_str += '[Warn]\tHigh Risk Overdue\n'
+
 
         the_str += '[Date]\t'
         if self.start is not None:
