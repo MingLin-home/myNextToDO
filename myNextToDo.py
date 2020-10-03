@@ -164,11 +164,11 @@ class ToDoEntry():
             the_str += 'Cost ' + str(self.cost) + ' days \n'
 
         the_str += '[Tag]\t '
-        if self.important is not None:
+        if self.important:
             the_str += '[Important]'
-        if self.easy is not None:
+        if self.easy:
             the_str += '[Easy]'
-        if self.wait is not None:
+        if self.wait:
             the_str += '[Wait]'
 
         return the_str
