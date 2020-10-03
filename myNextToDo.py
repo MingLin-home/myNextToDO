@@ -220,7 +220,7 @@ def print_next_action(todo_entry_list, opt):
     print('*' * opt.screen_width)
 
 
-def print_by_due(todo_entry_list: list[ToDoEntry], opt):
+def print_by_due(todo_entry_list, opt):
     today = datetime.today()
     max_due_date = today + timedelta(days=opt.days)
     due_list = [x for x in todo_entry_list if x.due is not None and x.due <= max_due_date]
@@ -255,8 +255,7 @@ if __name__ == '__main__':
 
     if opt.print_by_due:
         print_by_due(todo_entry_list, opt)
-
-
-    print_next_action(todo_entry_list, opt)
+    else:
+        print_next_action(todo_entry_list, opt)
 
 
