@@ -115,7 +115,7 @@ class ToDoEntry():
                 score += __two_day_due_urgency__
             elif today + timedelta(days=self.cost) <= due_date - timedelta(days=1):
                 score += __one_day_due_urgency__
-            else:
+            elif today + timedelta(days=self.cost) >= due_date - timedelta(days=0):
                 score += __overdue_urgency__
                 self.risk_of_overdue = True
 
