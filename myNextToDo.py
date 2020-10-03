@@ -3,21 +3,21 @@ valid tag:
 @start:mm/dd/yyyy
 @due:mm/dd/yyyy
 @cost:3
-@important, @easy @today, @wait
+@important, @today, @wait
 """
 import sys, os
 import argparse
 from datetime import datetime, timedelta
 
 default_myNextToDo_txt = os.path.expanduser('./myNextToDo.txt')
-__base_urgency__ = 1
+__start_urgency__ = 10
 __overdue_urgency__ = 100000
 __due_today_urgency__ = 5000
 __one_day_due_urgency__ = 500
 __two_day_due_urgency__ = 100
 __three_day_due_urgency__ = 50
-__important_urgency__ = 10
-__easy_urgency__ = 1
+__important_urgency__ = 5
+
 
 def parse_cmd_options(argv):
     parser = argparse.ArgumentParser()
@@ -73,8 +73,7 @@ class ToDoEntry():
 
         self.start = None
         self.due = None
-        self.important = False
-        self.easy = False
+        self.important = False        
         self.cost = 0
         self.wait = False
 
@@ -95,9 +94,7 @@ class ToDoEntry():
             if tag_key == 'cost' or tag_key == 'c':
                 self.cost = int(tag_value)
             if tag_key == 'important' or tag_key == 'i':
-                self.important = True
-            if tag_key == 'easy' or tag_key == 'e':
-                self.easy = True
+                self.important = True            
             if tag_key == 'wait' or tag_key == 'w':
                 self.wait = True
             if tag_key == 'today' or tag_key == 't':
@@ -116,33 +113,32 @@ class ToDoEntry():
             start_date = today
         else:
             start_date = None
-
-        score_muliplier = 0
+        
         score = 0
         if start_date is not None and start_date <= today:
-            score_muliplier = 1
-            score += __base_urgency__
+            score += __start_urgency__
 
         if self.important:
             score += __important_urgency__
-
-        if self.easy:
-            score += __easy_urgency__
 
         # compute due date
         if self.due is not None:
             due_date = self.due
 
             # today + cost compare to due date
-            if today + timedelta(days=self.cost) <= due_date - timedelta(days=4):
-                pass
-            elif today + timedelta(days=self.cost) <= due_date - timedelta(days=3):
+            expected_done_date = today + timedelta(days=self.cost)
+            if expected_done_date <= due_date - timedelta(days=4):
+                remain_datetime = expected_done_date - (due_date - timedelta(days=4))
+                remain_seconds = remain_datetime.total_seconds()
+                cost_seconds = timedelta(days=self.cost).total_seconds()
+                score += cost_seconds / float(cost_seconds + remain_seconds) * __three_day_due_urgency__
+            elif expected_done_date <= due_date - timedelta(days=3):
                 score += __three_day_due_urgency__
-            elif today + timedelta(days=self.cost) <= due_date - timedelta(days=2):
+            elif expected_done_date <= due_date - timedelta(days=2):
                 score += __two_day_due_urgency__
-            elif today + timedelta(days=self.cost) <= due_date - timedelta(days=1):
+            elif expected_done_date <= due_date - timedelta(days=1):
                 score += __one_day_due_urgency__
-            elif today + timedelta(days=self.cost) <= due_date:
+            elif expected_done_date <= due_date:
                 score += __due_today_urgency__
             else:
                 score += __overdue_urgency__
@@ -163,7 +159,7 @@ class ToDoEntry():
                 score += __overdue_urgency__
                 self.already_overdue = True
 
-        return score_muliplier * score
+        return score
 
     def __str__(self):
         the_str = ''
@@ -188,8 +184,6 @@ class ToDoEntry():
         the_str += '[Tag]\t '
         if self.important:
             the_str += '[Important]'
-        if self.easy:
-            the_str += '[Easy]'
         if self.wait:
             the_str += '[Wait]'
 
@@ -280,5 +274,3 @@ if __name__ == '__main__':
         print_by_due(todo_entry_list, opt)
     else:
         print_next_action(todo_entry_list, opt)
-
-
