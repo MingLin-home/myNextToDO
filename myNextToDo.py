@@ -63,11 +63,12 @@ def parse_datetime_str(datetime_str):
 
 
 class ToDoEntry():
-    def __init__(self, todo_entry: str):
+    def __init__(self, todo_entry: str, id=None):
         self.todo_entry = todo_entry
+        self.id = id
         # parse entry
         todo_entry_split_list = self.todo_entry.split('@')
-        self.title = todo_entry_split_list[0].strip()
+        self.title = todo_entry_split_list[0].strip() + '(ID {})'.format(self.id)
 
         self.start = None
         self.due = None
@@ -182,12 +183,12 @@ def parse_todo_txt(myNextToDo_txt):
         file_lines = fid.readlines()
 
     todo_entry_list = []
-    for the_line in file_lines:
+    for line_id, the_line in enumerate(file_lines):
         the_line = the_line.strip()
         if len(the_line) == 0 or the_line.startswith('#'):
             continue
 
-        todo_entry_list.append(ToDoEntry(the_line))
+        todo_entry_list.append(ToDoEntry(the_line, id=the_line))
 
     return todo_entry_list
 
