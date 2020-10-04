@@ -271,6 +271,8 @@ if __name__ == '__main__':
     myNextToDo_txt = opt.input
     todo_entry_list = parse_todo_txt(myNextToDo_txt)
 
+    print('>>>\tToday is '+datetime.today().strftime('%m/%d/%Y  %A'))
+
     if opt.print_by_due:
         print_by_due(todo_entry_list, opt)
     else:
