@@ -16,7 +16,6 @@ __due_today_urgency__ = 5000
 __one_day_due_urgency__ = 500
 __two_day_due_urgency__ = 100
 __three_day_due_urgency__ = 50
-__important_urgency__ = 5
 
 
 def parse_cmd_options(argv):
@@ -115,11 +114,13 @@ class ToDoEntry():
             start_date = None
         
         score = 0
+        score_multiply = 0
         if start_date is not None and start_date <= today:
             score += __start_urgency__
+            score_multiply = 1
 
         if self.important:
-            score += __important_urgency__
+            score_multiply = 2
 
         # compute due date
         if self.due is not None:
@@ -159,7 +160,7 @@ class ToDoEntry():
                 score += __overdue_urgency__
                 self.already_overdue = True
 
-        return score
+        return score_multiply * score
 
     def __str__(self):
         the_str = ''
