@@ -68,7 +68,7 @@ class ToDoEntry():
         self.id = id
         # parse entry
         todo_entry_split_list = self.todo_entry.split('@')
-        self.title = todo_entry_split_list[0].strip() + '(ID {})'.format(self.id)
+        self.title = todo_entry_split_list[0].strip() + '(ID {})'.format(self.id + 1)
 
         self.start = None
         self.due = None
