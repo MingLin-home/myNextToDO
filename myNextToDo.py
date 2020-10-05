@@ -2,7 +2,7 @@
 valid tag:
 @start:mm/dd/yyyy
 @due:mm/dd/yyyy
-@cost:3
+@cost:0.5
 @important, @today, @wait
 """
 import sys, os
@@ -73,7 +73,7 @@ class ToDoEntry():
         self.start = None
         self.due = None
         self.important = False        
-        self.cost = 0
+        self.cost = 0.5
         self.wait = False
 
         for todo_entry_split in todo_entry_split_list:
@@ -91,7 +91,7 @@ class ToDoEntry():
             if tag_key == 'due' or tag_key == 'd':
                 self.due = parse_datetime_str(tag_value)
             if tag_key == 'cost' or tag_key == 'c':
-                self.cost = int(tag_value)
+                self.cost = float(tag_value)
             if tag_key == 'important' or tag_key == 'i':
                 self.important = True            
             if tag_key == 'wait' or tag_key == 'w':
@@ -107,11 +107,17 @@ class ToDoEntry():
 
     def get_urgency(self):
         today = datetime.today()
-        # missing start date, any important or having-due task starts from today
-        if self.start is None and (self.due is not None or self.important):
-            start_date = today
-        else:
-            start_date = None
+        
+        if self.start is not None:
+            start_date = self.start
+        elif self.start is None:
+            # missing start date, due-date tasks auto start from today
+            if self.due is not None:
+                start_date = today
+            else:
+                start_date = None
+            pass  # end if
+        pass  # end if
         
         score = 0
         score_multiply = 0
@@ -179,8 +185,13 @@ class ToDoEntry():
             the_str += 'Start ' + self.start.strftime('%m/%d/%Y') + ' '
         if self.due is not None:
             the_str += 'Due ' + self.due.strftime('%m/%d/%Y') + ' '
+        if hasattr(self, 'urgency') and self.urgency is not None:
+            the_str += 'Urgency ' + '{:3g}'.format(self.urgency) + ' '
+
         if self.cost is not None:
-            the_str += 'Cost ' + str(self.cost) + ' days \n'
+            the_str += 'Cost ' + '{:2g}'.format(self.cost) + ' days \n'
+
+        
 
         the_str += '[Tag]\t '
         if self.important:
@@ -212,6 +223,7 @@ def parse_todo_txt(myNextToDo_txt):
 
 
 def print_next_action(todo_entry_list, opt):
+
     todo_entry_list.sort(key=lambda x: x.urgency, reverse=True)
     print('*' * opt.screen_width)
     printed_entry_count = 0
