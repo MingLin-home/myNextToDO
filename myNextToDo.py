@@ -99,11 +99,11 @@ class ToDoEntry():
             if tag_key == 'today' or tag_key == 't':
                 self.due = datetime.today()
 
-            self.risk_of_overdue = False
-            self.already_overdue = False
-            self.due_today = False
+        self.risk_of_overdue = False
+        self.already_overdue = False
+        self.due_today = False
 
-            self.urgency = self.get_urgency()
+        self.urgency = self.get_urgency()
 
     def get_urgency(self):
         today = datetime.today()
@@ -135,7 +135,7 @@ class ToDoEntry():
             # today + cost compare to due date
             expected_done_date = today + timedelta(days=self.cost)
             if expected_done_date <= due_date - timedelta(days=4):
-                remain_datetime = expected_done_date - (due_date - timedelta(days=4))
+                remain_datetime = (due_date - timedelta(days=4)) - expected_done_date 
                 remain_seconds = remain_datetime.total_seconds()
                 cost_seconds = timedelta(days=self.cost).total_seconds()
                 score += cost_seconds / float(cost_seconds + remain_seconds) * __three_day_due_urgency__
